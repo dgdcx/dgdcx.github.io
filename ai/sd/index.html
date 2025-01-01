@@ -12,6 +12,8 @@
       alert('Hello :D')
       // Get the base64-encoded image data from the URL query parameter
       const urlParams = new URLSearchParams(window.location.search);
+      
+      // Must be URL Encoded
       let base64Data = urlParams.get('base64');
 
       // Replace underscores with slashes
