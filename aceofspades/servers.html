@@ -1,0 +1,98 @@
+<html>
+	<head>
+		<title>Servers</title>
+		<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
+		<script type="text/javascript">
+			var url = 'http://services.buildandshoot.com/serverlist.json';
+			function getData(url) {
+				var http = new XMLHttpRequest();
+				http.open("GET",url,false);
+				http.send(null);
+				var data = JSON.parse(http.responseText);
+				return data;
+			}
+			function sortData(data) {
+				let sorted = true;
+				while(sorted) {
+					sorted = false;
+					for (i = 0; i < data.length - 1; i++) {
+						if (data[i].players_current < data[i+1].players_current) {
+							sorted = true;
+						}
+						if ((data[i].players_current == data[i+1].players_current) && (data[i].players_max < data[i+1].players_max)) {
+							sorted = true;
+						}
+						if ((data[i].players_current == data[i+1].players_current) && (data[i].players_max == data[i+1].players_max) && data[i].name < data[i+1].name) {
+							sorted = true;
+						}
+						if (sorted) {
+							t = data[i];
+							data[i] = data[i+1];
+							data[i+1] = t;
+						}
+					}
+				}
+				return data;
+			}
+			function updateTable() {
+				let data = sortData(getData(url));
+				let table = $('table');
+				table.empty();
+				for (i = 0; i < data.length; i++) {
+					var server = data[i];
+					var mid = '</td><td>';
+					table.append('<tr><td>'+server.name + mid + server.game_mode + mid + server.map + mid + server.players_current + '/' + server.players_max + '</td></tr>');
+				}
+			}
+			let loopMethod = function() {
+				updateTable();
+			}
+			setTimeout(loopMethod,100);
+			var loop = setInterval(function() { loopMethod(); }, 5000);
+		</script>
+		<style type="text/css">
+			* {
+				box-sizing:border-box;
+				margin:0;
+				padding:0;
+			}
+			html {
+				font-size:16px;
+				font-family:Consolas;
+				background-color:rgb(10%,10%,10%);
+				color:#FFFFFF;
+			}
+			body {
+				max-width:50em;
+				margin:0 auto;
+				font-size:1em;
+			}
+			h1, h2, h3, h4, h5, h6, p {
+				margin-bottom:1em;
+			}
+			p {
+				text-indent:5em;
+			}
+			h1 {
+				font-size:3em;
+			}
+			h2 {
+				font-size:2em;
+			}
+			h3 {
+				font-size:1em;
+			}
+			table {
+				margin:0 auto;
+			}
+			table * {
+				background-color:rgba(255,255,255,0.1);
+				padding:0.25em;
+			}
+		</style>
+	</head>
+	<body>
+		<table>
+		</table>
+	</body>
+</html>
